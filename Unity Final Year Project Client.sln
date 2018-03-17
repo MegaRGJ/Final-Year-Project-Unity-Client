@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity Final Year Project Client.Plugins", "Unity Final Year Project Client.Plugins.csproj", "{C08FE348-FE2F-38BD-76E2-B402340C8641}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity Final Year Project Client", "Unity Final Year Project Client.csproj", "{0E11B85B-6F56-E6B2-7A72-B2EBD71FD2B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity Final Year Project Client.Editor.Plugins", "Unity Final Year Project Client.Editor.Plugins.csproj", "{81370DEF-F54B-B7BC-67C4-C001B1D7023B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C08FE348-FE2F-38BD-76E2-B402340C8641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08FE348-FE2F-38BD-76E2-B402340C8641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08FE348-FE2F-38BD-76E2-B402340C8641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08FE348-FE2F-38BD-76E2-B402340C8641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E11B85B-6F56-E6B2-7A72-B2EBD71FD2B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E11B85B-6F56-E6B2-7A72-B2EBD71FD2B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E11B85B-6F56-E6B2-7A72-B2EBD71FD2B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E11B85B-6F56-E6B2-7A72-B2EBD71FD2B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81370DEF-F54B-B7BC-67C4-C001B1D7023B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81370DEF-F54B-B7BC-67C4-C001B1D7023B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81370DEF-F54B-B7BC-67C4-C001B1D7023B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81370DEF-F54B-B7BC-67C4-C001B1D7023B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
