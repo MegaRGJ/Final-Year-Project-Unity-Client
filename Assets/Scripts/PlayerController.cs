@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour {
 
         transform.Translate(strafe, 0, translation);
 
-        if (Input.GetKeyDown("e")) //remove maybe?
+        if (Input.GetKeyDown("e"))
         {
             Cursor.lockState = CursorLockMode.None;
         }

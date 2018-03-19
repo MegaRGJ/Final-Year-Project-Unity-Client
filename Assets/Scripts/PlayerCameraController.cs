@@ -10,7 +10,7 @@ public class PlayerCameraController : MonoBehaviour
     Vector2 SMOOTH;
 
     public float SENSITIVITY = 5.0f;
-    public float SMOOTHING = 2.0f;
+    public float SMOOTHING = 0.0f; 
 
 	void Start ()
     {
