@@ -16,14 +16,22 @@ public class AIContoller : MonoBehaviour
 	void Update ()
     {
         DELTATIME = Time.deltaTime;
+        //StateMachine();
 
-        MoveForward();
+    }
+
+    void StateMachine()
+    {
         Turn(50);
     }
 
-    void MoveForward()
+    /// <summary>
+    /// -1 == Backwards | +1 == Forwards
+    /// </summary>
+    /// <param name="heading"></param>
+    void Heading(float heading)
     {
-        float translation = 1 * SPEED;
+        float translation = heading * SPEED;
         float strafe = 0 * SPEED;
 
         translation *= DELTATIME;
@@ -32,25 +40,20 @@ public class AIContoller : MonoBehaviour
         transform.Translate(strafe, 0, translation);
     }
 
-    void MoveBackwards()
+    /// <summary>
+    /// -1 == Left | +1 == Right
+    /// </summary>
+    /// <param name="heading"></param>
+    void Strafing(float heading)
     {
+        float translation = heading * SPEED;
+        float strafe = 0 * SPEED;
 
+        translation *= DELTATIME;
+        strafe *= DELTATIME;
+
+        transform.Translate(translation, 0, strafe);
     }
-
-    //void TurnRight(float rotationAmount)
-    //{
-    //    float angle;
-    //    Vector3 way;
-
-    //    transform.rotation.ToAngleAxis(out angle, out way);
-
-    //    if (angle > (360 - rotationAmount)) // caused some odd bug without
-    //    {
-    //        angle = 0; // 0 == 360
-    //    }
-
-    //    transform.localRotation = Quaternion.AngleAxis(angle + rotationAmount, way);
-    //}
 
     /// <summary>
     /// - == Left | + == Right
