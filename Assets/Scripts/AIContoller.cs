@@ -26,7 +26,7 @@ public struct Actions
 public class AIContoller : MonoBehaviour
 {
 
-    bool IS_AI_ENABLED = true;
+    public bool IS_AI_ENABLED = true;
     float SPEED = 15.0f;
     private float DELTATIME;
     Actions ACTIONS;

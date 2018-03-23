@@ -6,10 +6,12 @@ public class PlayerController : MonoBehaviour {
 
     float SPEED = 15.0f;
     float SHIFTSPEED = 100.0f;
+    AIContoller AICONTOLLER;
 
     void Start ()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        AICONTOLLER = GetComponent<AIContoller>();
 	}
 	
 	void Update ()
@@ -21,19 +23,19 @@ public class PlayerController : MonoBehaviour {
             speed = SHIFTSPEED;
         }
 
+         float dtime = Time.deltaTime;
+         float translation = Input.GetAxis("Vertical") * speed;
+         float strafe = Input.GetAxis("Horizontal") * speed;
+         
+         translation *= dtime;
+         strafe *= dtime;
+         
+         transform.Translate(strafe, 0, translation);
+        
 
-        float dtime = Time.deltaTime;
-        float translation = Input.GetAxis("Vertical") * speed;
-        float strafe = Input.GetAxis("Horizontal") * speed;
-
-        translation *= dtime;
-        strafe *= dtime;
-
-        transform.Translate(strafe, 0, translation);
-
-        if (Input.GetKeyDown("e"))
+        if (Input.GetKeyDown("f"))
         {
-            Cursor.lockState = CursorLockMode.None;
+            AICONTOLLER.IS_AI_ENABLED ^= true;
         }
 
     }
