@@ -1,34 +1,32 @@
-﻿using System.Collections;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Threading;
 // Includes which are system specific
 using System.Net;
 using System.Net.Sockets;
 
-public class Communication : MonoBehaviour
+public class Communication
 {
     private Socket CLIENT_SOCKET;
     private EndPoint IPENDPOINT;
     private Thread RECEIVE_THREAD;
     private int BYTE_LIMIT = 512;
 
-    private int POSITION_ID = 0;
-    private int CONNECT_ID = 1;
-    private int DISCONNECT_ID = 2;
+    private List<byte[]> PACKET_LIST = new List<byte[]>();
+    private readonly object LOCK = new object();
+    
 
     public void Connect(string ip, int port)
     {
         CLIENT_SOCKET = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         CLIENT_SOCKET.SendTimeout = 1;
-
+        
         IPENDPOINT = new IPEndPoint(IPAddress.Parse(ip), port);
     }
 
     public void Disconnect()
     {
-
+        RECEIVE_THREAD.Abort();
+        CLIENT_SOCKET.Close();
     }
 
     public void SendData(List<byte[]> list)
@@ -39,7 +37,20 @@ public class Communication : MonoBehaviour
         }
     }
 
-    public List<string> GetData()
+    public List<byte[]> GetData()
+    {
+        List<byte[]> packetList;
+
+        lock (LOCK)
+        {
+            packetList = PACKET_LIST;
+            PACKET_LIST = new List<byte[]>();
+        }
+
+        return packetList;
+    }
+
+    public void StartDataReceive()
     {
 
         RECEIVE_THREAD = new Thread(() =>
@@ -52,45 +63,13 @@ public class Communication : MonoBehaviour
 
                 CLIENT_SOCKET.ReceiveFrom(data, ref IPENDPOINT);
 
-                
-                packetBuffer.AddPacket(packet);
+                lock (LOCK)
+                {
+                    PACKET_LIST.Add(data);
+                }
             }
         });
-        return new List<string>();
-    }
-
-    public byte[] CreateConnectData(string username)
-    {
-        List<byte> byteList = new List<byte>();
-
-        byteList.AddRange(BitConverter.GetBytes(CONNECT_ID)); //4 bytes
-        byteList.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(username));
-        
-        return byteList.ToArray();
-    }
-
-    public byte[] CreateDisconnecetData(string username)
-    {
-        List<byte> byteList = new List<byte>();
-
-        byteList.AddRange(BitConverter.GetBytes(DISCONNECT_ID)); //4 bytes
-        byteList.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(username));
-
-        return byteList.ToArray();
-    }
-
-    public byte[] CreatePositionData(float x, float y, float z, string alphabet)
-    {
-        List<byte> byteList = new List<byte>();
-
-        byteList.AddRange(BitConverter.GetBytes(POSITION_ID)); //4 bytes
-        byteList.AddRange(BitConverter.GetBytes(x));
-        byteList.AddRange(BitConverter.GetBytes(y));
-        byteList.AddRange(BitConverter.GetBytes(z));
-        byteList.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(alphabet));
-
-        return byteList.ToArray();
-
+        RECEIVE_THREAD.Start();
     }
 }
 
