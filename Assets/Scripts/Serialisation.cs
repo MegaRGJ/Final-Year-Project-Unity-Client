@@ -12,9 +12,9 @@ public struct ServerPacket
 
 public class Serialisation
 {
-    private int POSITION_ID = 0;
-    private int CONNECT_ID = 1;
-    private int DISCONNECT_ID = 2;
+    private int POSITION_ID = 1;
+    private int CONNECT_ID = 2;
+    private int DISCONNECT_ID = 3;
 
     public byte[] SerialiseConnectData(string username)
     {
