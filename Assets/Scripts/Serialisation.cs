@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public struct ServerPacket
+public struct ServerPositionPacket
 {
     public int PlayerID;
     public float X;
@@ -36,16 +36,16 @@ public class Serialisation
         return byteList.ToArray();
     }
 
-    public byte[] SerialisePositionData (float x, float y, float z, float r)
+    public byte[] SerialisePositionData (float x, float y, float z, float r, int playerID)
     {
         List<byte> byteList = new List<byte>();
 
-        byteList.AddRange(BitConverter.GetBytes(POSITION_ID)); //4 bytes
+        byteList.AddRange(BitConverter.GetBytes(POSITION_ID));
+        byteList.AddRange(BitConverter.GetBytes(playerID));
         byteList.AddRange(BitConverter.GetBytes(x));
         byteList.AddRange(BitConverter.GetBytes(y));
         byteList.AddRange(BitConverter.GetBytes(z));
         byteList.AddRange(BitConverter.GetBytes(r));
-        //byteList.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(alphabet));
 
         return byteList.ToArray();
 
@@ -53,7 +53,7 @@ public class Serialisation
 
     public object DeserialiseServerPacket(byte[] packet)
     {
-        ServerPacket p = new ServerPacket();
+        ServerPositionPacket p = new ServerPositionPacket();
 
         p.PlayerID = BitConverter.ToInt32(packet, 0);
         p.X = BitConverter.ToSingle(packet, 4);

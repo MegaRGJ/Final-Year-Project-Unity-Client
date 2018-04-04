@@ -16,10 +16,12 @@ public class MultiplayerManager : MonoBehaviour
     public string USERNAME = "Mega";
 
     public GameObject PLAYER_CHARACTER;
+    public bool IS_CONNECTED = false;
     private Transform PLAYER_TRANSFORM;
     private List<byte[]> PACKET_LIST = new List<byte[]>();
     private double LAST_SEND = 0;
-
+    private int PLAYER_ID;
+    
     void Start ()
     {
         PLAYER_TRANSFORM = PLAYER_CHARACTER.GetComponent<Transform>();
@@ -35,9 +37,9 @@ public class MultiplayerManager : MonoBehaviour
         {
             LAST_SEND = GetMSTime();
 
-            UpdateClientWithServerData(); // Check in here if packets are missing?
-
             UpdateServerWithClientData();
+
+            UpdateClientWithServerData(); // Check in here if packets are missing?
         }
     }
 
@@ -45,28 +47,23 @@ public class MultiplayerManager : MonoBehaviour
     {
         COMMS.Connect(IP_ADDRESS, PORT);
         COMMS.StartDataReceive();
-
-        //Send Connect Packet
-        //SendConnectRequest(USERNAME);
     }
 
-    public void SendConnectRequest(string name)
+    public void SendConnectRequest()
     {
         PACKET_LIST.Add(SERIAL.SerialiseConnectData(name));
     }
 
     private void UpdateServerWithClientData()
     {
-        //Get required data
         float x = PLAYER_TRANSFORM.position.x;
         float y = PLAYER_TRANSFORM.position.y;
         float z = PLAYER_TRANSFORM.position.z;
         float r = PLAYER_TRANSFORM.rotation.y;
         
-        //Create any byte packets that needs sending.
-        if (true) //Has connection been achieved?
+        if (IS_CONNECTED)
         {
-            PACKET_LIST.Add(SERIAL.SerialisePositionData(x, y, z, r));
+            PACKET_LIST.Add(SERIAL.SerialisePositionData(x, y, z, r, PLAYER_ID));
         }
         
         //Send Packets
@@ -83,6 +80,10 @@ public class MultiplayerManager : MonoBehaviour
     {
         List<byte[]> packets = COMMS.GetData();
 
+        if (packets.Count > 0)
+        {
+            string meme = "a";
+        }
         //SERIAL.DeserialiseServerPacket();
     }
 }

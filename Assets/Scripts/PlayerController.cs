@@ -38,5 +38,16 @@ public class PlayerController : MonoBehaviour {
             AICONTOLLER.IS_AI_ENABLED ^= true;
         }
 
+        if (Input.GetKeyDown("q"))
+        {
+            if (Cursor.lockState == CursorLockMode.None)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
     }
 }

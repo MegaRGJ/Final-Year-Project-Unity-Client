@@ -24,6 +24,8 @@ public class FirstPersonGUI : MonoBehaviour
         int width = Screen.width;
         int height = Screen.height;
 
+
+        ConnectButton(width, height);
         FPS(width, height);
         AIEnabled(width, height);
     }
@@ -57,4 +59,16 @@ public class FirstPersonGUI : MonoBehaviour
         string text = string.Format("AI Enabled: " + PLAYERAICONTOLLER.IS_AI_ENABLED.ToString());
         GUI.Label(rect, text, style);
     } 
+
+    void ConnectButton(int width, int height)
+    {
+        int buttonHeight = height * 4 / 100;
+        int buttonWidth = width * 8 / 100;
+        Rect rect = new Rect(0, buttonHeight * 2, buttonWidth, buttonHeight);
+
+        if (GUI.Button(rect, "Connect"))
+        {
+            GetComponent<MultiplayerManager>().SendConnectRequest();
+        }
+    }
 }
