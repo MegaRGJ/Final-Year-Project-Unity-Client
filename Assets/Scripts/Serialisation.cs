@@ -15,6 +15,7 @@ public class Serialisation
     private int POSITION_ID = 1;
     private int CONNECT_ID = 2;
     private int DISCONNECT_ID = 3;
+    private int ACKNOWLEDGMENT_ID = 4;
 
     public byte[] SerialiseConnectData(string username)
     {

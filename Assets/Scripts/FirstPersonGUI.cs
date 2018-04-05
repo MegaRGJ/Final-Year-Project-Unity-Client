@@ -5,13 +5,14 @@ using UnityEngine;
 public class FirstPersonGUI : MonoBehaviour
 {
     float DELTATIME = 0.0f;
-    AIContoller PLAYERAICONTOLLER;
-
+    AIContoller PLAYER_AICONTOLLER;
+    MultiplayerManager MULTIPLAYER_MANAGER;
     void Start()
     {
         GameObject Player = GameObject.Find("Player");
-        PLAYERAICONTOLLER  = Player.GetComponent<AIContoller>();
-        
+        PLAYER_AICONTOLLER  = Player.GetComponent<AIContoller>();
+        GameObject MultiplayerScript = GameObject.Find("MultiplayerScript");
+        MULTIPLAYER_MANAGER = MultiplayerScript.GetComponent<MultiplayerManager>();
     }
 
     void Update()
@@ -56,7 +57,7 @@ public class FirstPersonGUI : MonoBehaviour
         style.fontSize = height * 3 / 100;
         style.normal.textColor = Color.green;
         
-        string text = string.Format("AI Enabled: " + PLAYERAICONTOLLER.IS_AI_ENABLED.ToString());
+        string text = string.Format("AI Enabled: " + PLAYER_AICONTOLLER.IS_AI_ENABLED.ToString());
         GUI.Label(rect, text, style);
     } 
 
@@ -68,7 +69,7 @@ public class FirstPersonGUI : MonoBehaviour
 
         if (GUI.Button(rect, "Connect"))
         {
-            GetComponent<MultiplayerManager>().SendConnectRequest();
+            MULTIPLAYER_MANAGER.SendConnectRequest();
         }
     }
 }

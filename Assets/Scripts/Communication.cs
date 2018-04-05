@@ -8,6 +8,7 @@ public class Communication
 {
     private Socket CLIENT_SOCKET;
     private EndPoint IPENDPOINT;
+    private EndPoint LOCALENDPOINT;
     private Thread RECEIVE_THREAD;
     private int BYTE_LIMIT = 512;
 
@@ -21,6 +22,7 @@ public class Communication
         CLIENT_SOCKET.SendTimeout = 1;
         
         IPENDPOINT = new IPEndPoint(IPAddress.Parse(ip), port);
+        LOCALENDPOINT = new IPEndPoint(IPAddress.Any, port);
     }
 
     public void Disconnect()
@@ -61,12 +63,12 @@ public class Communication
             {
                 data = new byte[BYTE_LIMIT];
 
-                CLIENT_SOCKET.ReceiveFrom(data, ref IPENDPOINT);
+                CLIENT_SOCKET.ReceiveFrom(data, ref IPENDPOINT); // or Receive
 
-                lock (LOCK)
-                {
+                //lock (LOCK)
+                //{
                     PACKET_LIST.Add(data);
-                }
+             //   }
             }
         });
         RECEIVE_THREAD.Start();

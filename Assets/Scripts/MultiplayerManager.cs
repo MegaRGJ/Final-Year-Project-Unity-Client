@@ -65,10 +65,13 @@ public class MultiplayerManager : MonoBehaviour
         {
             PACKET_LIST.Add(SERIAL.SerialisePositionData(x, y, z, r, PLAYER_ID));
         }
-        
+
         //Send Packets
-        COMMS.SendData(PACKET_LIST);
-        PACKET_LIST.Clear();
+        if (PACKET_LIST.Count != 0)
+        {
+            COMMS.SendData(PACKET_LIST);
+            PACKET_LIST.Clear();
+        }
     }
 
     private double GetMSTime()
