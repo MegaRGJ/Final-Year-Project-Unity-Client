@@ -8,20 +8,25 @@ public class MultiplayerManager : MonoBehaviour
 {
     private Communication COMMS;
     private Serialisation SERIAL;
-
     private Thread NETWORKSERVER_THREAD;
     public string IP_ADDRESS = "127.0.0.1";
     public int PORT = 4739;
     public int MS_INTERVAL = 16; // 1000/ 60 = 16.6666666667
     public string USERNAME = "Mega";
-
     public GameObject PLAYER_CHARACTER;
     public bool IS_CONNECTED = false;
     private Transform PLAYER_TRANSFORM;
+
     private List<byte[]> PACKET_LIST = new List<byte[]>();
     private double LAST_SEND = 0;
-    private int PLAYER_ID;
-    
+    private int PLAYER_ID = -1;
+
+    //Put these somewhere else
+    private int POSITION_ID = 1;
+    private int CONNECT_ID = 2;
+    private int DISCONNECT_ID = 3;
+    private int ACKNOWLEDGMENT_ID = 4;
+
     void Start ()
     {
         PLAYER_TRANSFORM = PLAYER_CHARACTER.GetComponent<Transform>();
@@ -41,17 +46,26 @@ public class MultiplayerManager : MonoBehaviour
 
             UpdateClientWithServerData(); // Check in here if packets are missing?
         }
+
     }
 
     private void StartConnection()
     {
         COMMS.Connect(IP_ADDRESS, PORT);
-        COMMS.StartDataReceive();
+        //COMMS.StartDataReceive();
     }
 
     public void SendConnectRequest()
     {
+        COMMS.StartDataReceive();
         PACKET_LIST.Add(SERIAL.SerialiseConnectData(name));
+    }
+
+    public void SendDisconnectRequest()
+    {
+        PACKET_LIST.Add(SERIAL.SerialiseDisconnecetData(PLAYER_ID));
+        COMMS.SendData(PACKET_LIST);
+        COMMS.Disconnect();
     }
 
     private void UpdateServerWithClientData()
@@ -85,8 +99,31 @@ public class MultiplayerManager : MonoBehaviour
 
         if (packets.Count > 0)
         {
-            string meme = "a";
+            foreach (var serverPacket in packets)
+            {
+                int ID = SERIAL.DeserialisePacketType(serverPacket);
+
+                if (ID == POSITION_ID)
+                {
+                    ServerPositionPacket packet = SERIAL.DeserialiseServerPositionPacket(serverPacket);
+                    //packet.PlayerID
+                }
+                else if (ID == CONNECT_ID)
+                {
+
+                }
+                else if (ID == DISCONNECT_ID)
+                {
+                    
+                }
+                else if (ID == ACKNOWLEDGMENT_ID)
+                {
+                    ServerAcknowledgementPacket packet = SERIAL.DeserialiseServerAcknowledgementPacket(serverPacket);
+                    PLAYER_ID = packet.ClientID;
+                    IS_CONNECTED ^= true;
+                }
+            }
         }
-        //SERIAL.DeserialiseServerPacket();
+        
     }
 }

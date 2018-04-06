@@ -10,12 +10,17 @@ public struct ServerPositionPacket
     public float Rotation;
 }
 
+public struct ServerAcknowledgementPacket
+{
+    public int ClientID;
+}
+
 public class Serialisation
 {
-    private int POSITION_ID = 1;
-    private int CONNECT_ID = 2;
-    private int DISCONNECT_ID = 3;
-    private int ACKNOWLEDGMENT_ID = 4;
+    int POSITION_ID = 1;
+    int CONNECT_ID = 2;
+    int DISCONNECT_ID = 3;
+    int ACKNOWLEDGMENT_ID = 4;
 
     public byte[] SerialiseConnectData(string username)
     {
@@ -27,12 +32,12 @@ public class Serialisation
         return byteList.ToArray();
     }
 
-    public byte[] SerialiseDisconnecetData(string username)
+    public byte[] SerialiseDisconnecetData(int clientID)
     {
         List<byte> byteList = new List<byte>();
 
         byteList.AddRange(BitConverter.GetBytes(DISCONNECT_ID)); //4 bytes
-        byteList.AddRange(System.Text.ASCIIEncoding.ASCII.GetBytes(username));
+        byteList.AddRange(BitConverter.GetBytes(clientID));
 
         return byteList.ToArray();
     }
@@ -52,15 +57,28 @@ public class Serialisation
 
     }
 
-    public object DeserialiseServerPacket(byte[] packet)
+    public int DeserialisePacketType(byte[] packet)
+    {
+        return BitConverter.ToInt32(packet, 0);
+    }
+
+    public ServerPositionPacket DeserialiseServerPositionPacket(byte[] packet)
     {
         ServerPositionPacket p = new ServerPositionPacket();
+        
+        p.PlayerID = BitConverter.ToInt32(packet, 4);
+        p.X = BitConverter.ToSingle(packet, 8);
+        p.Y = BitConverter.ToSingle(packet, 12);
+        p.Z = BitConverter.ToSingle(packet, 16);
+        p.Rotation = BitConverter.ToSingle(packet, 20);
 
-        p.PlayerID = BitConverter.ToInt32(packet, 0);
-        p.X = BitConverter.ToSingle(packet, 4);
-        p.Y = BitConverter.ToSingle(packet, 8);
-        p.Z = BitConverter.ToSingle(packet, 12);
-        p.Rotation = BitConverter.ToSingle(packet, 16);
+        return p;
+    }
+
+    public ServerAcknowledgementPacket DeserialiseServerAcknowledgementPacket(byte[] packet)
+    {
+        ServerAcknowledgementPacket p = new ServerAcknowledgementPacket();
+        p.ClientID = BitConverter.ToInt32(packet, 4);
 
         return p;
     }

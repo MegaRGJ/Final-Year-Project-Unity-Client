@@ -3,39 +3,40 @@ using System.Threading;
 // Includes which are system specific
 using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
+using System;
 
 public class Communication
 {
-    private Socket CLIENT_SOCKET;
-    private EndPoint IPENDPOINT;
-    private EndPoint LOCALENDPOINT;
-    private Thread RECEIVE_THREAD;
+    private IPEndPoint IPENDPOINT;
+    private IPEndPoint LOCALENDPOINT;
     private int BYTE_LIMIT = 512;
+
+    UdpClient UDPCLIENT;
 
     private List<byte[]> PACKET_LIST = new List<byte[]>();
     private readonly object LOCK = new object();
     
 
     public void Connect(string ip, int port)
-    {
-        CLIENT_SOCKET = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        CLIENT_SOCKET.SendTimeout = 1;
-        
+    { 
         IPENDPOINT = new IPEndPoint(IPAddress.Parse(ip), port);
         LOCALENDPOINT = new IPEndPoint(IPAddress.Any, port);
+
+        UDPCLIENT = new UdpClient();
+        UDPCLIENT.Connect(IPENDPOINT);
     }
 
     public void Disconnect()
     {
-        RECEIVE_THREAD.Abort();
-        CLIENT_SOCKET.Close();
+        UDPCLIENT.Close();
     }
 
     public void SendData(List<byte[]> list)
     {
         foreach (var byteData in list)
         {
-            CLIENT_SOCKET.SendTo(byteData, IPENDPOINT);
+            UDPCLIENT.Send(byteData, byteData.Length);
         }
     }
 
@@ -54,24 +55,29 @@ public class Communication
 
     public void StartDataReceive()
     {
-
-        RECEIVE_THREAD = new Thread(() =>
+        try
         {
             byte[] data;
+            data = new byte[BYTE_LIMIT];
+            UDPCLIENT.BeginReceive(new AsyncCallback(HandleReceive), null);
+        }
+        catch(Exception e)
+        {
+            var meme = e;
+        }
+    }
 
-            while (true)
-            {
-                data = new byte[BYTE_LIMIT];
+    public void HandleReceive(IAsyncResult data)
+    {
+        byte[] receivedBytes = UDPCLIENT.EndReceive(data, ref IPENDPOINT);
 
-                CLIENT_SOCKET.ReceiveFrom(data, ref IPENDPOINT); // or Receive
-
-                //lock (LOCK)
-                //{
-                    PACKET_LIST.Add(data);
-             //   }
-            }
-        });
-        RECEIVE_THREAD.Start();
+        lock (LOCK)
+        {
+            PACKET_LIST.Add(receivedBytes);
+            Debug.Log("Packet Added!");
+        }
+        StartDataReceive();
     }
 }
+
 

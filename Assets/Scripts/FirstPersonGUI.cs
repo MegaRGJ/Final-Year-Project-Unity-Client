@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class FirstPersonGUI : MonoBehaviour
@@ -7,17 +8,25 @@ public class FirstPersonGUI : MonoBehaviour
     float DELTATIME = 0.0f;
     AIContoller PLAYER_AICONTOLLER;
     MultiplayerManager MULTIPLAYER_MANAGER;
+    public Button BUTTON;
+    private Text BUTTON_TEXT;
+
     void Start()
     {
         GameObject Player = GameObject.Find("Player");
         PLAYER_AICONTOLLER  = Player.GetComponent<AIContoller>();
         GameObject MultiplayerScript = GameObject.Find("MultiplayerScript");
         MULTIPLAYER_MANAGER = MultiplayerScript.GetComponent<MultiplayerManager>();
+        BUTTON_TEXT = BUTTON.GetComponent<Text>();
     }
 
     void Update()
     {
         DELTATIME += (Time.unscaledDeltaTime - DELTATIME) * 0.1f;
+
+        BUTTON.GetComponentInChildren<Text>().text =
+            MULTIPLAYER_MANAGER.IS_CONNECTED ? "Disconnect" : "Connect";
+
     }
 
     void OnGUI()
@@ -63,13 +72,15 @@ public class FirstPersonGUI : MonoBehaviour
 
     void ConnectButton(int width, int height)
     {
-        int buttonHeight = height * 4 / 100;
-        int buttonWidth = width * 8 / 100;
-        Rect rect = new Rect(0, buttonHeight * 2, buttonWidth, buttonHeight);
-
-        if (GUI.Button(rect, "Connect"))
-        {
-            MULTIPLAYER_MANAGER.SendConnectRequest();
-        }
+        BUTTON.onClick.AddListener(() => {
+            if (!MULTIPLAYER_MANAGER.IS_CONNECTED)
+            {
+                MULTIPLAYER_MANAGER.SendConnectRequest();
+            }
+            else
+            {
+                MULTIPLAYER_MANAGER.SendDisconnectRequest();
+            }
+        });
     }
 }
