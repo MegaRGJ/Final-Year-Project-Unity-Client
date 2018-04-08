@@ -8,7 +8,6 @@ public class MultiplayerManager : MonoBehaviour
 {
     private Communication COMMS;
     private Serialisation SERIAL;
-    private Thread NETWORKSERVER_THREAD;
     public string IP_ADDRESS = "127.0.0.1";
     public int PORT = 4739;
     public int MS_INTERVAL = 16; // 1000/ 60 = 16.6666666667
@@ -22,10 +21,20 @@ public class MultiplayerManager : MonoBehaviour
     private int PLAYER_ID = -1;
 
     //Put these somewhere else
-    private int POSITION_ID = 1;
+    private int SERVER_PLAYER_ID = 1;
     private int CONNECT_ID = 2;
     private int DISCONNECT_ID = 3;
     private int ACKNOWLEDGMENT_ID = 4;
+    
+    public GameObject OTHER_PLAYER_PREFAB;
+    List<OtherPlayer> OTHER_PLAYERS;
+
+    struct OtherPlayer
+    {
+        public int PlayerID;
+        public GameObject Prefab;
+        public float LastUpdate;
+    }
 
     void Start ()
     {
@@ -58,7 +67,7 @@ public class MultiplayerManager : MonoBehaviour
     public void SendConnectRequest()
     {
         COMMS.StartDataReceive();
-        PACKET_LIST.Add(SERIAL.SerialiseConnectData(name));
+        PACKET_LIST.Add(SERIAL.SerialiseConnectData(USERNAME));
     }
 
     public void SendDisconnectRequest()
@@ -103,10 +112,10 @@ public class MultiplayerManager : MonoBehaviour
             {
                 int ID = SERIAL.DeserialisePacketType(serverPacket);
 
-                if (ID == POSITION_ID)
+                if (ID == SERVER_PLAYER_ID)
                 {
-                    ServerPositionPacket packet = SERIAL.DeserialiseServerPositionPacket(serverPacket);
-                    //packet.PlayerID
+                    ServerPlayerPacket packet = SERIAL.DeserialiseServerPositionPacket(serverPacket);
+                    DealWithPlayerPacket(packet);
                 }
                 else if (ID == CONNECT_ID)
                 {
@@ -125,5 +134,38 @@ public class MultiplayerManager : MonoBehaviour
             }
         }
         
+    }
+
+    private void DealWithPlayerPacket(ServerPlayerPacket packet)
+    {
+        int index = OTHER_PLAYERS.FindIndex(x => x.PlayerID == packet.PlayerID);
+
+        if (index < 0)
+        {
+            CreatePlayerPrefab(packet);
+        }
+        else
+        {
+            UpdatePlayerPrefab(index, packet);
+        }
+    }
+
+    public void CreatePlayerPrefab(ServerPlayerPacket packet)
+    {
+        OtherPlayer player;
+        player.PlayerID = packet.PlayerID;
+        player.Prefab = Instantiate(OTHER_PLAYER_PREFAB);
+        player.LastUpdate = Time.time;
+
+        player.Prefab.transform.position = new Vector3(packet.X, packet.Y, packet.Z);
+        player.Prefab.transform.rotation = new Quaternion(0, packet.Rotation, 0, 0);
+
+        OTHER_PLAYERS.Add(player);
+    }
+
+    private void UpdatePlayerPrefab(int index, ServerPlayerPacket packet)
+    {
+        OTHER_PLAYERS[index].Prefab.transform.position = new Vector3(packet.X, packet.Y, packet.Z);
+        OTHER_PLAYERS[index].Prefab.transform.rotation = new Quaternion(0, packet.Rotation, 0, 0);
     }
 }

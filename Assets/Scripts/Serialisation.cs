@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public struct ServerPositionPacket
+public struct ServerPlayerPacket
 {
     public int PlayerID;
     public float X;
     public float Y;
     public float Z;
     public float Rotation;
+    public string Username;
 }
 
 public struct ServerAcknowledgementPacket
@@ -62,15 +63,16 @@ public class Serialisation
         return BitConverter.ToInt32(packet, 0);
     }
 
-    public ServerPositionPacket DeserialiseServerPositionPacket(byte[] packet)
+    public ServerPlayerPacket DeserialiseServerPositionPacket(byte[] packet)
     {
-        ServerPositionPacket p = new ServerPositionPacket();
+        ServerPlayerPacket p = new ServerPlayerPacket();
         
         p.PlayerID = BitConverter.ToInt32(packet, 4);
         p.X = BitConverter.ToSingle(packet, 8);
         p.Y = BitConverter.ToSingle(packet, 12);
         p.Z = BitConverter.ToSingle(packet, 16);
         p.Rotation = BitConverter.ToSingle(packet, 20);
+        p.Username = BitConverter.ToString(packet, 24);
 
         return p;
     }

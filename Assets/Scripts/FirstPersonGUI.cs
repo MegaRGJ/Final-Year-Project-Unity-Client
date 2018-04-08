@@ -10,7 +10,7 @@ public class FirstPersonGUI : MonoBehaviour
     MultiplayerManager MULTIPLAYER_MANAGER;
     public Button BUTTON;
     private Text BUTTON_TEXT;
-
+    float LAST_PRESSED;
     void Start()
     {
         GameObject Player = GameObject.Find("Player");
@@ -73,13 +73,17 @@ public class FirstPersonGUI : MonoBehaviour
     void ConnectButton(int width, int height)
     {
         BUTTON.onClick.AddListener(() => {
-            if (!MULTIPLAYER_MANAGER.IS_CONNECTED)
+            if (LAST_PRESSED != Time.time)
             {
-                MULTIPLAYER_MANAGER.SendConnectRequest();
-            }
-            else
-            {
-                MULTIPLAYER_MANAGER.SendDisconnectRequest();
+                LAST_PRESSED = Time.time;
+                if (!MULTIPLAYER_MANAGER.IS_CONNECTED)
+                {
+                    MULTIPLAYER_MANAGER.SendConnectRequest();
+                }
+                else
+                {
+                    MULTIPLAYER_MANAGER.SendDisconnectRequest();
+                }
             }
         });
     }
