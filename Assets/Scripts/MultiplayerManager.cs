@@ -27,7 +27,7 @@ public class MultiplayerManager : MonoBehaviour
     private int ACKNOWLEDGMENT_ID = 4;
     
     public GameObject OTHER_PLAYER_PREFAB;
-    List<OtherPlayer> OTHER_PLAYERS;
+    List<OtherPlayer> OTHER_PLAYERS = new List<OtherPlayer>();
 
     struct OtherPlayer
     {
@@ -138,15 +138,27 @@ public class MultiplayerManager : MonoBehaviour
 
     private void DealWithPlayerPacket(ServerPlayerPacket packet)
     {
-        int index = OTHER_PLAYERS.FindIndex(x => x.PlayerID == packet.PlayerID);
+        try
+        {
+            int index = -1;
 
-        if (index < 0)
-        {
-            CreatePlayerPrefab(packet);
+            if (OTHER_PLAYERS.Count != 0)
+            {
+                index = OTHER_PLAYERS.FindIndex(x => x.PlayerID == packet.PlayerID);
+            }
+
+            if (index < 0)
+            {
+                CreatePlayerPrefab(packet);
+            }
+            else
+            {
+                UpdatePlayerPrefab(index, packet);
+            }
         }
-        else
+        catch(Exception e)
         {
-            UpdatePlayerPrefab(index, packet);
+            Debug.Log(e.ToString());
         }
     }
 
