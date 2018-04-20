@@ -15,11 +15,12 @@ public class MultiplayerManager : MonoBehaviour
     public GameObject PLAYER_CHARACTER;
     public bool IS_CONNECTED = false;
     private Transform PLAYER_TRANSFORM;
-
+    
     private List<byte[]> PACKET_LIST = new List<byte[]>();
     private double LAST_SEND = 0;
     private int PLAYER_ID = -1;
 
+    private float DISCONNECTION_TIMEOUT = 1000; //ms
     //Put these somewhere else
     private int SERVER_PLAYER_ID = 1;
     private int CONNECT_ID = 2;
@@ -33,7 +34,7 @@ public class MultiplayerManager : MonoBehaviour
     {
         public int PlayerID;
         public GameObject Prefab;
-        public float LastUpdate;
+        public double LastUpdate;
     }
 
     void Start ()
@@ -53,7 +54,9 @@ public class MultiplayerManager : MonoBehaviour
 
             UpdateServerWithClientData();
 
-            UpdateClientWithServerData(); // Check in here if packets are missing?
+            UpdateClientWithServerData();
+
+            CheckIfClientsAreDisconnected();
         }
 
     }
@@ -82,7 +85,7 @@ public class MultiplayerManager : MonoBehaviour
         float x = PLAYER_TRANSFORM.position.x;
         float y = PLAYER_TRANSFORM.position.y;
         float z = PLAYER_TRANSFORM.position.z;
-        float r = PLAYER_TRANSFORM.rotation.y;
+        float r = PLAYER_TRANSFORM.rotation.eulerAngles.y;
         
         if (IS_CONNECTED)
         {
@@ -140,6 +143,11 @@ public class MultiplayerManager : MonoBehaviour
     {
         try
         {
+            if (packet.PlayerID == PLAYER_ID) //If its a packet about the clients self ignore it.
+            {
+                return;
+            }
+
             int index = -1;
 
             if (OTHER_PLAYERS.Count != 0)
@@ -167,17 +175,38 @@ public class MultiplayerManager : MonoBehaviour
         OtherPlayer player;
         player.PlayerID = packet.PlayerID;
         player.Prefab = Instantiate(OTHER_PLAYER_PREFAB);
-        player.LastUpdate = Time.time;
+        player.LastUpdate = GetMSTime();
 
         player.Prefab.transform.position = new Vector3(packet.X, packet.Y, packet.Z);
-        player.Prefab.transform.rotation = new Quaternion(0, packet.Rotation, 0, 0);
 
+        player.Prefab.transform.eulerAngles = new Vector3(transform.rotation.x, packet.Rotation, transform.rotation.z);
         OTHER_PLAYERS.Add(player);
     }
 
     private void UpdatePlayerPrefab(int index, ServerPlayerPacket packet)
     {
         OTHER_PLAYERS[index].Prefab.transform.position = new Vector3(packet.X, packet.Y, packet.Z);
-        OTHER_PLAYERS[index].Prefab.transform.rotation = new Quaternion(0, packet.Rotation, 0, 0);
+        OTHER_PLAYERS[index].Prefab.transform.eulerAngles = new Vector3(transform.rotation.x, packet.Rotation, transform.rotation.z);
+
+        OtherPlayer tempOPlayer; // Due to a c# not allowing me to modify the copy I need to create a new version.
+        tempOPlayer.PlayerID = OTHER_PLAYERS[index].PlayerID;
+        tempOPlayer.Prefab = OTHER_PLAYERS[index].Prefab;
+        tempOPlayer.LastUpdate = GetMSTime();
+
+        OTHER_PLAYERS[index] = tempOPlayer;
+    }
+
+    private void CheckIfClientsAreDisconnected()
+    {
+        for (int i = 0; i < OTHER_PLAYERS.Count; i++)
+        {
+            //LAST_SEND + MS_INTERVAL <= GetMSTime()
+            if (OTHER_PLAYERS[i].LastUpdate + DISCONNECTION_TIMEOUT <= GetMSTime())
+            {
+                Debug.Log("Diconnection: " + OTHER_PLAYERS[i].PlayerID + "Time :" + OTHER_PLAYERS[i].LastUpdate);
+                Destroy(OTHER_PLAYERS[i].Prefab);
+                OTHER_PLAYERS.Remove(OTHER_PLAYERS[i]);
+            }
+        }
     }
 }

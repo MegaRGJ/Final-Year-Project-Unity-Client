@@ -13,6 +13,8 @@ public class FirstPersonGUI : MonoBehaviour
     float LAST_PRESSED;
     void Start()
     {
+        Application.runInBackground = true;
+
         GameObject Player = GameObject.Find("Player");
         PLAYER_AICONTOLLER  = Player.GetComponent<AIContoller>();
         GameObject MultiplayerScript = GameObject.Find("MultiplayerScript");
