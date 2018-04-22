@@ -126,7 +126,9 @@ public class FirstPersonGUI : MonoBehaviour
                 LAST_PRESSED = Time.time;
                 if (!MULTIPLAYER_MANAGER.IS_CONNECTED)
                 {
-                    //MULTIPLAYER_MANAGER.IP_ADDRESS = IP.text;
+                    MULTIPLAYER_MANAGER.IP_ADDRESS = IP.text;
+                    MULTIPLAYER_MANAGER.PORT = int.Parse(PORT.text);
+                    MULTIPLAYER_MANAGER.StartConnection();
                     MULTIPLAYER_MANAGER.SendConnectRequest();
                 }
                 else

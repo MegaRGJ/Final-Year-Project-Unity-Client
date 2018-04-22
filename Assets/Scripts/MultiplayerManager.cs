@@ -8,8 +8,8 @@ public class MultiplayerManager : MonoBehaviour
 {
     private Communication COMMS;
     private Serialisation SERIAL;
-    public string IP_ADDRESS = "127.0.0.1";
-    public int PORT = 4739;
+    public string IP_ADDRESS;
+    public int PORT;
     public int MS_INTERVAL = 16; // 1000/ 60 = 16.6666666667
     public string USERNAME = "Mega";
     public GameObject PLAYER_CHARACTER;
@@ -42,8 +42,6 @@ public class MultiplayerManager : MonoBehaviour
         PLAYER_TRANSFORM = PLAYER_CHARACTER.GetComponent<Transform>();
         COMMS = new Communication();
         SERIAL = new Serialisation();
-
-        StartConnection();
     }
 	
 	void Update ()
@@ -61,7 +59,7 @@ public class MultiplayerManager : MonoBehaviour
 
     }
 
-    private void StartConnection()
+    public void StartConnection()
     {
         COMMS.Connect(IP_ADDRESS, PORT);
         //COMMS.StartDataReceive();
