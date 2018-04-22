@@ -9,6 +9,8 @@ public class FirstPersonGUI : MonoBehaviour
     AIContoller PLAYER_AICONTOLLER;
     MultiplayerManager MULTIPLAYER_MANAGER;
     public Button BUTTON;
+    public InputField IP;
+    public InputField PORT;
     private Text BUTTON_TEXT;
     float LAST_PRESSED;
     void Start()
@@ -40,6 +42,9 @@ public class FirstPersonGUI : MonoBehaviour
         ConnectButton(width, height);
         FPS(width, height);
         AIEnabled(width, height);
+        SeenPlayers(width, height);
+        ControlsMovement(width, height);
+        ControlsAI(width, height);
     }
 
     void FPS(int width, int height)
@@ -70,8 +75,49 @@ public class FirstPersonGUI : MonoBehaviour
         
         string text = string.Format("AI Enabled: " + PLAYER_AICONTOLLER.IS_AI_ENABLED.ToString());
         GUI.Label(rect, text, style);
-    } 
+    }
 
+    void SeenPlayers(int width, int height)
+    {
+        GUIStyle style = new GUIStyle();
+
+        int labelHeight = height * 4 / 100;
+        Rect rect = new Rect(0, labelHeight * 2, width, labelHeight);
+        style.alignment = TextAnchor.UpperLeft;
+        style.fontSize = height * 3 / 100;
+        style.normal.textColor = Color.blue;
+
+        string text = string.Format("Seen Players: " + MULTIPLAYER_MANAGER.GetOtherPlayersAmount());
+        GUI.Label(rect, text, style);
+    }
+
+    void ControlsMovement(int width, int height)
+    {
+        GUIStyle style = new GUIStyle();
+
+        int labelHeight = height * 6 / 100;
+        Rect rect = new Rect(0, labelHeight * 2, width, labelHeight);
+        style.alignment = TextAnchor.UpperLeft;
+        style.fontSize = height * 3 / 100;
+        style.normal.textColor = Color.black;
+
+        string text = string.Format("Movement Controls: WASD");
+        GUI.Label(rect, text, style);
+    }
+
+    void ControlsAI(int width, int height)
+    {
+        GUIStyle style = new GUIStyle();
+
+        int labelHeight = height * 8 / 100;
+        Rect rect = new Rect(0, labelHeight * 2, width, labelHeight);
+        style.alignment = TextAnchor.UpperLeft;
+        style.fontSize = height * 3 / 100;
+        style.normal.textColor = Color.black;
+
+        string text = string.Format("AI Toggle Control: F");
+        GUI.Label(rect, text, style);
+    }
     void ConnectButton(int width, int height)
     {
         BUTTON.onClick.AddListener(() => {
@@ -80,6 +126,7 @@ public class FirstPersonGUI : MonoBehaviour
                 LAST_PRESSED = Time.time;
                 if (!MULTIPLAYER_MANAGER.IS_CONNECTED)
                 {
+                    //MULTIPLAYER_MANAGER.IP_ADDRESS = IP.text;
                     MULTIPLAYER_MANAGER.SendConnectRequest();
                 }
                 else

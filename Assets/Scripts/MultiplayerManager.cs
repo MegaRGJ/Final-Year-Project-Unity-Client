@@ -209,4 +209,9 @@ public class MultiplayerManager : MonoBehaviour
             }
         }
     }
+
+    public int GetOtherPlayersAmount()
+    {
+        return OTHER_PLAYERS.Count;
+    }
 }
